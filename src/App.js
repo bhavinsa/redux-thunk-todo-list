@@ -1,19 +1,33 @@
 import React, { Component } from "react";
 import "./App.css";
 import { connect } from "react-redux";
-import logo from "./logo.svg";
 import * as actionCreator from "./store/actions/actions";
 
 class App extends Component {
   render() {
+    let input;
     return (
       <div className="App">
-        <div className="Age-label">
-          your age: <span>{this.props.age}</span>
-        </div>
-        <button onClick={this.props.onAgeUp}>Age UP</button>
-        <button onClick={this.props.onAgeDown}>Age Down</button>
-        {this.props.loading && <img src={logo} className="App-logo" />}
+        <form
+          onSubmit={e => {
+            e.preventDefault();
+            if (!input.value.trim()) {
+              return;
+            }
+            this.props.addTodo(input.value);
+            input.value = "";
+          }}
+        >
+          <input ref={node => (input = node)} />
+          &nbsp;&nbsp;
+          <button type="submit">Add Todo</button>
+        </form>
+
+        <ul>
+          {this.props.todoArr.map(el => (
+            <li key={el.key}>{el.item}</li>
+          ))}
+        </ul>
       </div>
     );
   }
@@ -21,15 +35,13 @@ class App extends Component {
 
 const mapStateToProps = state => {
   return {
-    age: state.age,
-    loading: state.loading
+    todoArr: state.todoArr
   };
 };
 
 const mapDispachToProps = dispatch => {
   return {
-    onAgeUp: () => dispatch(actionCreator.ageUp(1)),
-    onAgeDown: () => dispatch(actionCreator.ageDown(1))
+    addTodo: d => dispatch(actionCreator.onAddTodo(d))
   };
 };
 export default connect(
